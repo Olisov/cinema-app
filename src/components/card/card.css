@@ -1,0 +1,5 @@
+.card {
+    overflow: hidden;
+    width: calc(50% - 4px);
+    max-width: calc(50% - 4px);
+}
