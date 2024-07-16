@@ -1,5 +1,69 @@
 .card {
-    overflow: hidden;
-    width: calc(50% - 4px);
-    max-width: calc(50% - 4px);
+  overflow: hidden;
+  width: calc(50% - 4px);
+  max-width: calc(50% - 4px);
+  display: flex;
+}
+
+.card__img {
+  max-height: 280px;
+  display: block;
+  margin-right: 20px;
+}
+
+.card__title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 140%;
+  color: #000;
+  margin: 0;
+}
+
+.card__release-date {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 183%;
+  color: #827e7e;
+}
+
+.card__description {
+  font-family: 'Inter UI', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 183%;
+  color: #000;
+}
+
+.card__data-item {
+    margin: 7px 0;
+}
+
+.genres {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
+
+  display: flex;
+  padding: 0;
+  margin: 0;
+  gap: 8px;
+}
+
+.genres__item {
+  list-style: none;
+  margin: 0;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  padding: 5px;
+
+}
+
+.card__rating-general {
+}
+.card__general-rating,
+.card__user-rating {
+  display: none;
 }

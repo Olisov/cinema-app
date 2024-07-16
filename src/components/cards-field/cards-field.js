@@ -1,45 +1,83 @@
 import React from 'react'
-import { Flex, Layout } from 'antd'
+import { Flex } from 'antd'
 
 import './cards-field.css'
 import Card from '../card'
 
-const { Content } = Layout
-
-const layoutStyle = {
-  //   borderRadius: 8,
-  overflow: 'hidden',
-  width: 'calc(50% - 4px)',
-  maxWidth: 'calc(50% - 4px)',
-}
-
-const contentStyle = {
-  textAlign: 'center',
-  minHeight: 120,
-  lineHeight: '120px',
-  color: '#fff',
-  backgroundColor: '#0958d9',
-}
-
 function CardsField() {
+  const cinemaDataArr = [
+    {
+      posterHref: 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
+      movieTitle: 'The way back',
+      releaseDate: new Date('2020-3-5'),
+      movieGenres: ['Action', 'Drama'],
+      movieDescription:
+        'A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...',
+      generalRating: '3',
+      userRating: '2',
+    },
+    {
+      posterHref: 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
+      movieTitle: 'The way back',
+      releaseDate: new Date('2020-3-5'),
+      movieGenres: ['Action', 'Drama'],
+      movieDescription:
+        'A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...',
+      generalRating: '3',
+      userRating: '2',
+    },
+    {
+      posterHref: 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
+      movieTitle: 'The way back',
+      releaseDate: new Date('2020-3-5'),
+      movieGenres: ['Action', 'Drama'],
+      movieDescription:
+        'A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...',
+      generalRating: '3',
+      userRating: '2',
+    },
+    {
+      posterHref: 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
+      movieTitle: 'The way back',
+      releaseDate: new Date('2020-3-5'),
+      movieGenres: ['Action', 'Drama'],
+      movieDescription:
+        'A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...',
+      generalRating: '3',
+      userRating: '2',
+    },
+  ]
+
   return (
     <Flex gap="small" wrap>
-      {/* <Layout style={layoutStyle}>
-        <Content style={contentStyle}>Content</Content>
-      </Layout> */}
-      <Card />
+      {cinemaDataArr.map((cinemaData) => {
+        const { posterHref, movieTitle, releaseDate, movieGenres, movieDescription, generalRating, userRating } =
+          cinemaData
 
-      <Layout style={layoutStyle}>
-        <Content style={contentStyle}>Content</Content>
-      </Layout>
+        return (
+          <Card
+            posterHref={posterHref}
+            movieTitle={movieTitle}
+            releaseDate={releaseDate}
+            movieGenres={movieGenres}
+            movieDescription={movieDescription}
+            generalRating={generalRating}
+            userRating={userRating}
+          />
+        )
+      })}
 
-      <Layout style={layoutStyle}>
-        <Content style={contentStyle}>Content</Content>
-      </Layout>
-
-      <Layout style={layoutStyle}>
-        <Content style={contentStyle}>Content</Content>
-      </Layout>
+      {/* <Card
+        posterHref="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+        movieTitle="The way back"
+        releaseDate={new Date('2020-3-5')}
+        movieGenres={['Action', 'Drama']}
+        movieDescription="A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction
+          attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...
+       "
+        generalRating="3"
+        userRating="2"
+      /> */}
     </Flex>
   )
 }

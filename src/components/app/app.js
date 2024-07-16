@@ -10,9 +10,9 @@ import CardsField from '../cards-field'
 
 function App() {
   return (
-    <body className="body body--center">
+    <div className="body body--center">
       <CardsField />
-    </body>
+    </div>
   )
 }
 
