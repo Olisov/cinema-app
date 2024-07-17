@@ -29,6 +29,7 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 0,
     'no-unused-vars': ['warn'],
+    camelcase: ['warn'],
     'import/no-unresolved': [2, { caseSensitive: false }],
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     'import/order': [

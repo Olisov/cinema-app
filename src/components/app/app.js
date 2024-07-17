@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
-import React from 'react'
+import { React, Component } from 'react'
 
+import ApiClient from '../api-client'
 import './app.css'
 import CardsField from '../cards-field'
 
@@ -8,52 +9,117 @@ import CardsField from '../cards-field'
 
 // const style = { background: '#0092ff', padding: '8px 0' }
 
-function App() {
-  return (
-    <div className="body body--center">
-      <CardsField />
-    </div>
-  )
+export default class App extends Component {
+  constructor() {
+    super()
+
+    this.state = {
+      cinemaDataArr: [
+        {
+          posterHref: 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
+          movieTitle: 'The way back',
+          releaseDate: new Date('2020-3-5'),
+          movieGenres: ['Action', 'Drama'],
+          movieDescription:
+            'A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...',
+          generalRating: '3',
+          userRating: '2',
+        },
+        {
+          posterHref: 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
+          movieTitle: 'The way back',
+          releaseDate: new Date('2020-3-5'),
+          movieGenres: ['Action', 'Drama'],
+          movieDescription:
+            'A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...',
+          generalRating: '3',
+          userRating: '2',
+        },
+        {
+          posterHref: 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
+          movieTitle: 'The way back',
+          releaseDate: new Date('2020-3-5'),
+          movieGenres: ['Action', 'Drama'],
+          movieDescription:
+            'A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...',
+          generalRating: '3',
+          userRating: '2',
+        },
+        {
+          posterHref: 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
+          movieTitle: 'The way back',
+          releaseDate: new Date('2020-3-5'),
+          movieGenres: ['Action', 'Drama'],
+          movieDescription:
+            'A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...',
+          generalRating: '3',
+          userRating: '2',
+        },
+      ],
+    }
+
+    // this.state = {}
+
+    const cinemaData = new ApiClient()
+
+    cinemaData.getResource().then((dataArr) => {
+      console.log(dataArr)
+      // this.setState({
+      //   cinemaDataArr: dataArr,
+      // })
+    })
+  }
+
+  // eslint-disable-next-line class-methods-use-this, react/no-unused-class-component-methods
+  // getData = () => {
+  //   const baseUrl = new URL('https://api.themoviedb.org/3/search/movie')
+  //   const searchParams = new URLSearchParams({ query: 'return', include_adult: 'false', language: 'en-US', page: '1' })
+  //   baseUrl.search = searchParams
+
+  //   const options = {
+  //     method: 'GET',
+  //     headers: {
+  //       accept: 'application/json',
+  //       Authorization:
+  //         'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4YTYwOTQ4ZmI5NGUwNWU5ZTA3MWYxYjkwMjY5NDUwYiIsIm5iZiI6MTcyMTE5NjczMi4xNzAxOTEsInN1YiI6IjY2OTYzNDdlN2QyODhhMTBjODQ4ZTkzMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.mIt63yKNTjqy6TtCZmyaJfWM-5yX34i2WKqtI9A5yyo',
+  //     },
+  //   }
+
+  //   fetch(baseUrl, options)
+  //     .then((res) => res.json())
+  //     .then(({ results }) => {
+  //       const shortReasp = results.slice(0, 4)
+  //       this.setState({
+  //         cinemaDataArr: shortReasp.map((cinemaData) => {
+  //           const { poster_path, title, release_date, genre_ids, overview } = cinemaData
+
+  //           return {
+  //             // posterHref: 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
+  //             posterHref: poster_path ? `https://image.tmdb.org/t/p/w500/${poster_path}` : null,
+  //             movieTitle: title,
+  //             releaseDate: new Date(release_date),
+  //             movieGenres: ['Action', 'Drama'],
+  //             movieDescription: overview,
+  //             generalRating: '3',
+  //             userRating: '2',
+  //           }
+  //         }),
+  //       })
+  //       // console.log(shortReasp)
+  //     })
+  //     .catch((err) => console.error(`error: ${err}`))
+
+  //   // console.log(baseUrl)
+  // }
+
+  render() {
+    const { cinemaDataArr } = this.state
+    return (
+      <div className="body body--center">
+        <CardsField cinemaDataArr={cinemaDataArr} />
+      </div>
+    )
+  }
 }
 
-export default App
-
-// function App() {
-//   return (
-//     <>
-//       <Divider orientation="left">sub-element align center</Divider>
-//       <Row justify="center">
-//         <Col span={8}>
-//           <Card
-//             hoverable
-//             style={{
-//               width: 240,
-//             }}
-//             cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
-//           >
-//             <Meta title="Europe Street beat" description="www.instagram.com" />
-//           </Card>
-//         </Col>
-//         <Col span={8}>
-//           <div style={style}>col-6</div>
-//         </Col>
-//       </Row>
-//       <Row justify="center">
-//         <Col span={8}>
-//           <div style={style}>col-6</div>
-//         </Col>
-//         <Col span={8}>
-//           <div style={style}>col-6</div>
-//         </Col>
-//       </Row>
-//       <Row justify="center">
-//         <Col span={8}>
-//           <div style={style}>col-6</div>
-//         </Col>
-//         <Col span={8}>
-//           <div style={style}>col-6</div>
-//         </Col>
-//       </Row>
-//     </div>
-//   )
-// }
+// export default App
