@@ -52,7 +52,7 @@ function CardsField(props) {
   return (
     <Flex gap="small" wrap>
       {cinemaDataArr.map((cinemaData) => {
-        const { posterHref, movieTitle, releaseDate, movieGenres, movieDescription, generalRating, userRating } =
+        const { posterHref, movieTitle, releaseDate, movieGenres, movieDescriptionShort, generalRating, userRating } =
           cinemaData
 
         return (
@@ -62,7 +62,7 @@ function CardsField(props) {
             movieTitle={movieTitle}
             releaseDate={releaseDate}
             movieGenres={movieGenres}
-            movieDescription={movieDescription}
+            movieDescriptionShort={movieDescriptionShort}
             generalRating={generalRating}
             userRating={userRating}
           />

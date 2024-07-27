@@ -4,7 +4,7 @@ import { format } from 'date-fns'
 import './card.css'
 
 function Card(props) {
-  const { posterHref, movieTitle, releaseDate, movieGenres, movieDescription, generalRating, userRating } = props
+  const { posterHref, movieTitle, releaseDate, movieGenres, movieDescriptionShort, generalRating, userRating } = props
 
   const randomHash = () => Math.random().toString(36).slice(2)
 
@@ -25,7 +25,7 @@ function Card(props) {
           ))}
           {/* <li className="genres__item">Action</li> */}
         </ul>
-        <div className="card__data-item card__description">{movieDescription} </div>
+        <div className="card__data-item card__description">{movieDescriptionShort} </div>
         <div className="card__user-rating">{userRating}</div>
       </div>
     </div>

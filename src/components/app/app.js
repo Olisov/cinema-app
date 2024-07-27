@@ -10,6 +10,8 @@ import CardsField from '../cards-field'
 // const style = { background: '#0092ff', padding: '8px 0' }
 
 export default class App extends Component {
+  cinemaData = new ApiClient()
+
   constructor() {
     super()
 
@@ -20,7 +22,7 @@ export default class App extends Component {
           movieTitle: 'The way back',
           releaseDate: new Date('2020-3-5'),
           movieGenres: ['Action', 'Drama'],
-          movieDescription:
+          movieDescriptionFull:
             'A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...',
           generalRating: '3',
           userRating: '2',
@@ -30,7 +32,7 @@ export default class App extends Component {
           movieTitle: 'The way back',
           releaseDate: new Date('2020-3-5'),
           movieGenres: ['Action', 'Drama'],
-          movieDescription:
+          movieDescriptionFull:
             'A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...',
           generalRating: '3',
           userRating: '2',
@@ -40,7 +42,7 @@ export default class App extends Component {
           movieTitle: 'The way back',
           releaseDate: new Date('2020-3-5'),
           movieGenres: ['Action', 'Drama'],
-          movieDescription:
+          movieDescriptionFull:
             'A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...',
           generalRating: '3',
           userRating: '2',
@@ -50,23 +52,24 @@ export default class App extends Component {
           movieTitle: 'The way back',
           releaseDate: new Date('2020-3-5'),
           movieGenres: ['Action', 'Drama'],
-          movieDescription:
+          movieDescriptionFull:
             'A former basketball all-star, who has lost his wife and family foundation in a struggle with addiction attempts to regain his soul and salvation by becoming the coach of a disparate ethnically mixed high ...',
           generalRating: '3',
           userRating: '2',
         },
       ],
     }
+    this.updateData()
 
     // this.state = {}
+  }
 
-    const cinemaData = new ApiClient()
-
-    cinemaData.getResource().then((dataArr) => {
-      console.log(dataArr)
-      // this.setState({
-      //   cinemaDataArr: dataArr,
-      // })
+  updateData() {
+    this.cinemaData.getResource().then((dataArr) => {
+      // console.log(dataArr)
+      this.setState({
+        cinemaDataArr: dataArr,
+      })
     })
   }
 
