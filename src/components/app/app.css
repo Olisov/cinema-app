@@ -1,8 +1,22 @@
+body {
+    margin: 0;
+}
+
 .body {
     width: 1010px;
 } 
 
 
 .body--center {
+    margin: 8px auto;
+}
+
+.body--middle {
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
 }
