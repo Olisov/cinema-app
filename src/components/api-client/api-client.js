@@ -15,7 +15,12 @@ export default class ApiClient {
 
   async getResource() {
     const baseUrl = new URL('https://api.themoviedb.org/3/search/movie')
-    const searchParams = new URLSearchParams({ query: 'return', include_adult: 'false', language: 'en-US', page: '1' })
+    const searchParams = new URLSearchParams({
+      query: 'return',
+      include_adult: 'false',
+      language: 'en-US',
+      page: '1',
+    })
     baseUrl.search = searchParams
 
     const options = {

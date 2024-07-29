@@ -19,6 +19,9 @@ export default class App extends Component {
     this.state = {
       loading: true,
       error: false,
+      offline: false,
+      // offlineListener,
+      // onlineListener,
       cinemaDataArr: [
         // {
         //   posterHref: 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
@@ -63,40 +66,39 @@ export default class App extends Component {
       ],
     }
     this.updateData()
-
-    // this.state = {}
   }
 
-  // eslint-disable-next-line react/no-unused-class-component-methods
   updateData() {
     this.cinemaData
       .getResource()
       .then((dataArr) => {
-        // console.log(dataArr)
         this.setState({
           cinemaDataArr: dataArr,
           loading: false,
         })
       })
       .catch((errorData) => {
-        this.setState({ error: errorData.toString(), loading: false })
+        if (errorData.message === 'Failed to fetch') this.setState({ offline: true })
+        else this.setState({ error: errorData.toString() })
+        this.setState({ loading: false })
       })
   }
 
   render() {
-    const { cinemaDataArr, loading, error } = this.state
+    const { cinemaDataArr, loading, error, offline } = this.state
 
-    console.log('navigator ', navigator.onLine)
-    // console.log('online change', window.on)
-
-    const spinner = loading ? <Spin size="large" /> : null
-    const alarmMessage = error ? <Alert message={error} type="error" showIcon /> : null
-    const content = !(loading && error) ? <CardsField cinemaDataArr={cinemaDataArr} /> : null
+    const spinner = loading && !offline ? <Spin size="large" /> : null
+    const alarmMessage = error && !offline ? <Alert message={error} type="error" showIcon /> : null
+    const offlineMessage = offline ? (
+      <Alert message="Offline. Check you're internet connection or VPN" type="error" showIcon />
+    ) : null
+    const content = !(loading && error && offline) ? <CardsField cinemaDataArr={cinemaDataArr} /> : null
 
     return (
-      <div className={`body ${loading || error ? 'body--middle' : 'body--center'}`}>
+      <div className={`body ${loading || error || offline ? 'body--middle' : 'body--center'}`}>
         {spinner}
         {alarmMessage}
+        {offlineMessage}
         {content}
       </div>
     )
