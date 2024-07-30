@@ -4,6 +4,7 @@ body {
 
 .body {
     width: 1010px;
+    padding: 36px;
 } 
 
 
@@ -19,4 +20,10 @@ body {
     align-items: center;
     text-align: center;
     min-height: 100vh;
+}
+
+
+.spin--center {
+    display: flex;
+    justify-content: center;
 }

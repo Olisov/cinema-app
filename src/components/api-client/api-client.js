@@ -13,13 +13,13 @@ export default class ApiClient {
     return `${desc.slice(0, lastSpace)} ...`
   }
 
-  async getResource() {
+  async getResource(request, page) {
     const baseUrl = new URL('https://api.themoviedb.org/3/search/movie')
     const searchParams = new URLSearchParams({
-      query: 'return',
+      query: request,
       include_adult: 'false',
       language: 'en-US',
-      page: '1',
+      page,
     })
     baseUrl.search = searchParams
 
@@ -37,23 +37,28 @@ export default class ApiClient {
       throw new Error(`Could not fetch ${baseUrl.toString()}, received ${res.status}`)
     }
     const resBody = await res.json()
+    // console.log(resBody)
 
-    const shortResp = resBody.results.slice(0, 4)
+    // const shortResp = resBody.results.slice(0, 4)
 
-    return shortResp.map((cinemaData) => {
-      const { poster_path, title, release_date, genre_ids, overview } = cinemaData
+    return {
+      totalPages: resBody.total_pages,
+      cinemaDataArr: resBody.results.map((cinemaData) => {
+        const { poster_path, title, release_date, genre_ids, overview } = cinemaData
 
-      return {
-        // posterHref: 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
-        posterHref: poster_path ? `https://image.tmdb.org/t/p/w500/${poster_path}` : null,
-        movieTitle: title,
-        releaseDate: new Date(release_date),
-        movieGenres: ['Action', 'Drama'],
-        movieDescriptionFull: overview,
-        movieDescriptionShort: this.shortenDescription(overview),
-        generalRating: '3',
-        userRating: '2',
-      }
-    })
+        return {
+          // posterHref: 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
+          posterHref: poster_path ? `https://image.tmdb.org/t/p/w500/${poster_path}` : null,
+          movieTitle: title,
+          releaseDate: release_date ? new Date(release_date) : null,
+          // releaseDate: new Date(),
+          movieGenres: ['Action', 'Drama'],
+          movieDescriptionFull: overview,
+          movieDescriptionShort: this.shortenDescription(overview),
+          generalRating: '3',
+          userRating: '2',
+        }
+      }),
+    }
   }
 }

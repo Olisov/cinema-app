@@ -16,7 +16,9 @@ function Card(props) {
           <h2 className="card__title">{movieTitle}</h2>
           <div className="card__general-rating">{generalRating}</div>
         </div>
-        <div className="card__data-item card__release-date">{format(releaseDate, 'MMMM d, y')}</div>
+        <div className="card__data-item card__release-date">
+          {releaseDate ? format(releaseDate, 'MMMM d, y') : 'No data'}
+        </div>
         <ul className="card__data-item genres">
           {movieGenres.map((genre) => (
             <li key={randomHash()} className="genres__item">

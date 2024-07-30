@@ -49,8 +49,12 @@ function CardsField(props) {
   // ]
   const randomHash = () => Math.random().toString(36).slice(2)
   const { cinemaDataArr } = props
+
+  const nothingToShow = cinemaDataArr.length < 1 ? <div>No result</div> : null
+
   return (
-    <Flex gap="small" wrap>
+    <Flex gap="small" className="cards-field" wrap>
+      {nothingToShow}
       {cinemaDataArr.map((cinemaData) => {
         const { posterHref, movieTitle, releaseDate, movieGenres, movieDescriptionShort, generalRating, userRating } =
           cinemaData

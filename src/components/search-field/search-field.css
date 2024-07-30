@@ -1,0 +1,17 @@
+.searchInput {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  border-color: rgba(0, 0, 0, 0.25);
+
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 137%;
+  /* color: rgba(0, 0, 0, 0.25); */
+}
+
+
+.searchInput--margin {
+    margin-bottom: 34px;
+}
