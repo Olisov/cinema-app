@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { React, Component } from 'react'
-import { Spin, Alert, ConfigProvider, Pagination } from 'antd'
+import { Spin, Alert, ConfigProvider, Pagination, Tabs } from 'antd'
 
 import ApiClient from '../api-client'
 import './app.css'
@@ -106,47 +106,75 @@ export default class App extends Component {
     this.setState({ request: newValue.target.value, loading: true })
   }
 
+  randomHash = () => Math.random().toString(36).slice(2)
+
   render() {
     const { cinemaDataArr, loading, error, offline, currentPage, totalPages } = this.state
 
-    const spinner = loading && !offline ? <Spin size="large" className="spin--center" /> : null
-    const alarmMessage = error && !offline ? <Alert message={error} type="error" showIcon /> : null
+    const spinner = loading ? <Spin size="large" className="spin--center" key={this.randomHash()} /> : null
+    const alarmMessage =
+      error && !offline ? <Alert message={error} type="error" showIcon key={this.randomHash()} /> : null
     const offlineMessage = offline ? (
-      <Alert message="Offline. Check you're internet connection or VPN" type="error" showIcon />
-    ) : null
-    const content = !(loading || error || offline) ? <CardsField cinemaDataArr={cinemaDataArr} /> : null
-    const pagination = !(loading || error || offline || cinemaDataArr.length < 1) ? (
-      <ConfigProvider
-        theme={{
-          components: {
-            Pagination: {
-              itemActiveBg: '#1890FF',
-              colorText: 'rgba(0, 0, 0, 0.88)',
-              colorPrimary: '#ffffff',
-              /* here is your component tokens */
-            },
-          },
-        }}
-      >
-        <Pagination
-          align="center"
-          onChange={this.changePage}
-          showSizeChanger={false}
-          defaultCurrent={currentPage}
-          total={totalPages}
-        />
-      </ConfigProvider>
+      <Alert message="Offline. Check you're internet connection or VPN" type="error" showIcon key={this.randomHash()} />
     ) : null
 
+    const hasData = !(loading || error || offline)
+    const content = hasData ? <CardsField cinemaDataArr={cinemaDataArr} key={this.randomHash()} /> : null
+    const pagination =
+      hasData && cinemaDataArr.length >= 1 ? (
+        <ConfigProvider
+          key={this.randomHash()}
+          theme={{
+            components: {
+              Pagination: {
+                itemActiveBg: '#1890FF',
+                colorText: 'rgba(0, 0, 0, 0.88)',
+                colorPrimary: '#ffffff',
+                /* here is your component tokens */
+              },
+            },
+          }}
+        >
+          <Pagination
+            align="center"
+            onChange={this.changePage}
+            showSizeChanger={false}
+            defaultCurrent={currentPage}
+            total={totalPages}
+          />
+        </ConfigProvider>
+      ) : null
+
+    // const defActiveTabKey = this.randomHash()
+    const tabsContent = [
+      {
+        label: 'Search',
+        key: this.randomHash(),
+        children: [
+          <SearchField key={this.randomHash()} searchValueChange={this.searchValueChange} />,
+          spinner,
+          alarmMessage,
+          offlineMessage,
+          content,
+          pagination,
+        ],
+      },
+      {
+        label: 'Rated',
+        key: this.randomHash(),
+        children: [spinner, alarmMessage, offlineMessage, content, pagination],
+      },
+    ]
+
     return (
-      // <div className={`body ${loading || error || offline ? 'body--middle' : 'body--center'}`}>
       <div className="body body--center">
-        <SearchField searchValueChange={this.searchValueChange} />
+        <Tabs defaultActiveKey="1" centered items={tabsContent} />
+        {/* <SearchField searchValueChange={this.searchValueChange} />
         {spinner}
         {alarmMessage}
         {offlineMessage}
         {content}
-        {pagination}
+        {pagination} */}
       </div>
     )
   }

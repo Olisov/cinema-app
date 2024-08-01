@@ -1,3 +1,5 @@
+import noPoster from './imgs/poster_not_found.png'
+
 export default class ApiClient {
   constructor() {
     this.state = {
@@ -48,7 +50,7 @@ export default class ApiClient {
 
         return {
           // posterHref: 'https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png',
-          posterHref: poster_path ? `https://image.tmdb.org/t/p/w500/${poster_path}` : null,
+          posterHref: poster_path ? `https://image.tmdb.org/t/p/w500/${poster_path}` : noPoster,
           movieTitle: title,
           releaseDate: release_date ? new Date(release_date) : null,
           // releaseDate: new Date(),
