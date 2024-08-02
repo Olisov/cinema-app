@@ -6,7 +6,7 @@ import ApiClient from '../api-client'
 import './app.css'
 import CardsField from '../cards-field'
 import SearchField from '../search-field'
-import { appProvider } from '../app-context'
+import { AppProvider } from '../app-context'
 
 // const { Meta } = Card
 
@@ -67,12 +67,14 @@ export default class App extends Component {
         //   userRating: '2',
         // },
       ],
+      genresDict: null,
     }
   }
 
   componentDidMount() {
     const { request, currentPage } = this.state
     this.getData(request, currentPage)
+    this.getGenres()
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -98,6 +100,19 @@ export default class App extends Component {
       })
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
+  getGenres() {
+    this.apiClientInstance
+      .getGenresDict()
+      .then((responseBody) => {
+        // console.log(responseBody)
+        this.setState({ genresDict: responseBody })
+      })
+      .catch((errorData) => {
+        this.setState({ error: errorData.toString(), loading: false })
+      })
+  }
+
   changePage = (newPageNum) => {
     // console.log(newPageNum)
     this.setState({ currentPage: newPageNum, loading: true })
@@ -110,7 +125,7 @@ export default class App extends Component {
   randomHash = () => Math.random().toString(36).slice(2)
 
   render() {
-    const { cinemaDataArr, loading, error, offline, currentPage, totalPages } = this.state
+    const { cinemaDataArr, loading, error, offline, currentPage, totalPages, genresDict, request } = this.state
 
     const spinner = loading ? <Spin size="large" className="spin--center" key={this.randomHash()} /> : null
     const alarmMessage =
@@ -152,7 +167,7 @@ export default class App extends Component {
         label: 'Search',
         key: this.randomHash(),
         children: [
-          <SearchField key={this.randomHash()} searchValueChange={this.searchValueChange} />,
+          <SearchField key={this.randomHash()} searchValueChange={this.searchValueChange} curValue={request} />,
           spinner,
           alarmMessage,
           offlineMessage,
@@ -168,11 +183,11 @@ export default class App extends Component {
     ]
 
     return (
-      <appProvider value={this.apiClientInstance}>
+      <AppProvider value={genresDict}>
         <div className="body body--center">
           <Tabs defaultActiveKey="1" centered items={tabsContent} />
         </div>
-      </appProvider>
+      </AppProvider>
     )
   }
 }
