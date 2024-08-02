@@ -6,13 +6,14 @@ import ApiClient from '../api-client'
 import './app.css'
 import CardsField from '../cards-field'
 import SearchField from '../search-field'
+import { appProvider } from '../app-context'
 
 // const { Meta } = Card
 
 // const style = { background: '#0092ff', padding: '8px 0' }
 
 export default class App extends Component {
-  cinemaData = new ApiClient()
+  apiClientInstance = new ApiClient()
 
   constructor() {
     super()
@@ -81,7 +82,7 @@ export default class App extends Component {
   }
 
   getData(request, page) {
-    this.cinemaData
+    this.apiClientInstance
       .getResource(request, page)
       .then((responseBody) => {
         this.setState({
@@ -167,15 +168,11 @@ export default class App extends Component {
     ]
 
     return (
-      <div className="body body--center">
-        <Tabs defaultActiveKey="1" centered items={tabsContent} />
-        {/* <SearchField searchValueChange={this.searchValueChange} />
-        {spinner}
-        {alarmMessage}
-        {offlineMessage}
-        {content}
-        {pagination} */}
-      </div>
+      <appProvider value={this.apiClientInstance}>
+        <div className="body body--center">
+          <Tabs defaultActiveKey="1" centered items={tabsContent} />
+        </div>
+      </appProvider>
     )
   }
 }
