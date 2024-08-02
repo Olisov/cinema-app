@@ -1,5 +1,11 @@
 .cards-field {
-    padding-bottom: 12px;
-    display: flex;
-    justify-content: center;
+  padding-bottom: 36px;
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 560px) {
+  .cards-field {
+    padding-bottom: 24px;
+  }
 }

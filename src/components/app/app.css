@@ -1,10 +1,12 @@
 body {
     margin: 0;
+    background-color: rgb(242, 243, 243);
 }
 
 .body {
     width: 1010px;
     padding: 36px;
+    background-color: white;
 } 
 
 
@@ -12,18 +14,20 @@ body {
     margin: 8px auto;
 }
 
-.body--middle {
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    min-height: 100vh;
-}
 
 
 .spin--center {
     display: flex;
     justify-content: center;
+}
+
+@media (max-width: 560px){
+    .body {
+        width: 505px;
+        padding: 16px;
+    } 
+
+    .body--center {
+        margin: 0;
+    }
 }

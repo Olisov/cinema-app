@@ -53,7 +53,7 @@ function CardsField(props) {
   const nothingToShow = cinemaDataArr.length < 1 ? <div>No result</div> : null
 
   return (
-    <Flex gap="small" className="cards-field" wrap>
+    <Flex gap="36px" className="cards-field" wrap>
       {nothingToShow}
       {cinemaDataArr.map((cinemaData) => {
         const { posterHref, movieTitle, releaseDate, movieGenres, movieDescriptionShort, generalRating, userRating } =

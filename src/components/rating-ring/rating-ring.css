@@ -1,0 +1,25 @@
+.rating-ring {
+    display: flex;
+    justify-content: center;
+
+    min-width: 30px;
+    height: 30px;
+    border: 3px solid;
+    border-radius: 100%;
+}
+
+
+.rating-ring--margin {
+margin-right: 9px;
+}
+
+.rating-ring--green {border-color: #66E900;}
+.rating-ring--yellow {border-color: #E9D100;}
+.rating-ring--orange {border-color: #E97E00;}
+.rating-ring--red {border-color: #E90000;}
+.rating-ring--black {border-color: #000;}
+
+.general-rating {
+    margin: 0;
+    line-height: 28px;
+}
