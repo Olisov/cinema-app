@@ -41,15 +41,24 @@ export default class ApiClient {
 
   async getSearchCinema(request, page) {
     const { baseUrl, optionsGet } = this.storage
-    const searchUrl = new URL('/3/search/movie', baseUrl)
-    const searchParams = new URLSearchParams({
+    const searchUrl = request ? new URL('/3/search/movie', baseUrl) : new URL('/3/discover/movie', baseUrl)
+    const requestSearchParams = new URLSearchParams({
       query: request,
       include_adult: 'false',
       language: 'en-US',
       page,
     })
-    searchUrl.search = searchParams
+    const discoverSearchParams = new URLSearchParams({
+      include_adult: 'false',
+      include_video: 'false',
+      language: 'en-US',
+      page,
+      sort_by: 'popularity.desc',
+    })
+    const searchParams = request ? requestSearchParams : discoverSearchParams
+
     // console.log(searchUrl)
+    searchUrl.search = searchParams
 
     const res = await fetch(searchUrl, optionsGet)
 

@@ -25,7 +25,7 @@ export default class App extends Component {
       loading: true,
       error: false,
       offline: false,
-      request: 'return',
+      // request: 'return',
       currentPage: 1,
       totalPages: null,
       cinemaDataArr: [
