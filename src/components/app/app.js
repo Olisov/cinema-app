@@ -1,5 +1,8 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/no-unused-class-component-methods */
+/* eslint-disable react/no-unused-state */
 /* eslint-disable no-unused-vars */
-import { React, Component } from 'react'
+import { React, Component, PureComponent } from 'react'
 import { Spin, Alert, ConfigProvider, Pagination, Tabs } from 'antd'
 
 import ApiClient from '../api-client'
@@ -67,7 +70,11 @@ export default class App extends Component {
         //   userRating: '2',
         // },
       ],
+      // ratedCinemaDataArr: [],
       genresDict: null,
+      guestSessionId: null,
+
+      // guestSessionExpiresAt: '2024-08-04 06:44:19 UTC',
     }
   }
 
@@ -75,17 +82,19 @@ export default class App extends Component {
     const { request, currentPage } = this.state
     this.getData(request, currentPage)
     this.getGenres()
+    this.guestSessionControl()
   }
 
   componentDidUpdate(prevProps, prevState) {
     const { currentPage, request } = this.state
-    if (currentPage !== prevState.currentPage) this.getData(request, currentPage)
-    else if (request !== prevState.request) this.getData(request, currentPage)
+    if (currentPage !== prevState.currentPage || request !== prevState.request) this.getData(request, currentPage)
+
+    // console.log('componentDidUpdate')
   }
 
   getData(request, page) {
     this.apiClientInstance
-      .getResource(request, page)
+      .getSearchCinema(request, page)
       .then((responseBody) => {
         this.setState({
           cinemaDataArr: responseBody.cinemaDataArr,
@@ -100,17 +109,23 @@ export default class App extends Component {
       })
   }
 
-  // eslint-disable-next-line react/no-unused-class-component-methods
   getGenres() {
     this.apiClientInstance
       .getGenresDict()
       .then((responseBody) => {
+        const { genres } = responseBody
         // console.log(responseBody)
-        this.setState({ genresDict: responseBody })
+        this.setState({ genresDict: genres })
       })
       .catch((errorData) => {
         this.setState({ error: errorData.toString(), loading: false })
       })
+  }
+
+  randomHash = () => Math.random().toString(36).slice(2)
+
+  searchValueChange = (newValue) => {
+    this.setState({ request: newValue.target.value, loading: true })
   }
 
   changePage = (newPageNum) => {
@@ -118,14 +133,98 @@ export default class App extends Component {
     this.setState({ currentPage: newPageNum, loading: true })
   }
 
-  searchValueChange = (newValue) => {
-    this.setState({ request: newValue.target.value, loading: true })
+  // updateCinemaDataArr = (id, newRating) => {
+  //   this.setState((lastState) => {
+  //     const { cinemaDataArr } = lastState
+  //     const idx = cinemaDataArr.findIndex((el) => el.id === id)
+
+  //     const editedCinema = { ...cinemaDataArr[idx] }
+  //     editedCinema.userRating = newRating
+
+  //     console.log('editedCinema', editedCinema)
+  //     return {
+  //       // cinemaDataArr: [...cinemaDataArr.slice(0, idx), editedCinema, ...cinemaDataArr.slice(idx + 1)],
+  //       cinemaDataArr: [editedCinema],
+  //     }
+  //   })
+  // }
+
+  // addRatedCinema = (id, newRating) => {
+  //   this.setState((lastState) => {
+  //     const { cinemaDataArr } = lastState
+  //     const idx = cinemaDataArr.findIndex((el) => el.id === id)
+
+  //     const ratedCinema = { ...cinemaDataArr[idx] }
+  //     ratedCinema.userRating = newRating
+
+  //     return {
+  //       ratedCinemaDataArr: [...lastState.ratedCinemaDataArr, ratedCinema],
+  //     }
+  //   })
+  // }
+
+  // checkRatedCinema = (id) => {
+  //   const { ratedCinemaDataArr } = this.state
+  //   const idx = ratedCinemaDataArr.findIndex((el) => el.id === id)
+  //   return idx >= 0
+  // }
+
+  // updateRatedCinema = (id, newRating) => {
+  //   this.setState((lastState) => {
+  //     const { ratedCinemaDataArr } = lastState
+  //     const idx = ratedCinemaDataArr.findIndex((el) => el.id === id)
+
+  //     const editedCinema = { ...ratedCinemaDataArr[idx] }
+  //     editedCinema.userRating = newRating
+
+  //     return {
+  //       ratedCinemaDataArr: [...ratedCinemaDataArr.slice(0, idx), editedCinema, ...ratedCinemaDataArr.slice(idx + 1)],
+  //     }
+  //   })
+  // }
+
+  // rateCinema = (id, newRate) => {
+  //   if (this.checkRatedCinema(id)) this.updateRatedCinema(id, newRate)
+  //   else this.addRatedCinema(id, newRate)
+  // }
+
+  test = () => {
+    this.setState({ loading: true })
   }
 
-  randomHash = () => Math.random().toString(36).slice(2)
+  guestSessionControl() {
+    // const { guestSessionId, guestSessionExpiresAt } = this.state
+    // const guestSessionIsRelevant = new Date(guestSessionExpiresAt) - new Date() > 0
+
+    const guestSessionId = localStorage.getItem('guestSessionId')
+    const guestSessionExpiresAt = localStorage.getItem('guestSessionExpiresAt')
+    const guestSessionIsRelevant = new Date(guestSessionExpiresAt) - new Date() > 0
+    if (!guestSessionId || !guestSessionExpiresAt || !guestSessionIsRelevant) {
+      localStorage.removeItem('guestSessionId')
+      localStorage.removeItem('guestSessionExpiresAt')
+      this.createGuestSession()
+    } else this.setState({ guestSessionId })
+
+    // if (!guestSessionIsRelevant) this.createGuestSession()
+  }
+
+  createGuestSession() {
+    this.apiClientInstance
+      .newGuestSession()
+      .then((responseBody) => {
+        const { guest_session_id: guestSessionId, expires_at: guestSessionExpiresAt } = responseBody
+        localStorage.setItem('guestSessionId', guestSessionId)
+        localStorage.setItem('guestSessionExpiresAt', guestSessionExpiresAt)
+        this.setState({ guestSessionId })
+      })
+      .catch((errorData) => {
+        this.setState({ error: errorData.toString(), loading: false })
+      })
+  }
 
   render() {
-    const { cinemaDataArr, loading, error, offline, currentPage, totalPages, genresDict, request } = this.state
+    const { cinemaDataArr, loading, error, offline, currentPage, totalPages, genresDict, request, guestSessionId } =
+      this.state
 
     const spinner = loading ? <Spin size="large" className="spin--center" key={this.randomHash()} /> : null
     const alarmMessage =
@@ -183,9 +282,34 @@ export default class App extends Component {
     ]
 
     return (
-      <AppProvider value={genresDict}>
+      <AppProvider
+        value={{
+          genresDict,
+          apiClientInstance: this.apiClientInstance,
+          guestSessionId,
+          updateCinemaDataArr: this.updateCinemaDataArr,
+        }}
+      >
         <div className="body body--center">
-          <Tabs defaultActiveKey="1" centered items={tabsContent} />
+          <Tabs
+            defaultActiveKey="1"
+            // defaultActiveKey={activeTab}
+            destroyInactiveTabPane="false"
+            centered
+            items={tabsContent}
+            onChange={(newTabs) => {
+              console.log('tabs', newTabs)
+              // this.setState({ activeTab: newTabs, loading: true })
+
+              // this.test()
+              // this.setState({ loading: true })
+              // this.setState((prevState) => {
+              //   return { loading: !prevState.loading }
+              // })
+              // const { request, currentPage } = this.state
+              this.getData(request, currentPage)
+            }}
+          />
         </div>
       </AppProvider>
     )

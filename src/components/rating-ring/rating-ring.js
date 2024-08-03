@@ -4,7 +4,7 @@ import './rating-ring.css'
 
 function RaringRing({ rating }) {
   let ringColor = 'rating-ring--black'
-  const genRating = +rating.slice(0, 4)
+  const genRating = +String(rating).slice(0, 4)
 
   if (genRating >= 7) ringColor = 'rating-ring--green'
   else if (genRating >= 5) ringColor = 'rating-ring--yellow'

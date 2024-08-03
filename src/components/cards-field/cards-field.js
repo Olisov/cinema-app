@@ -4,6 +4,11 @@ import { Flex } from 'antd'
 import './cards-field.css'
 import Card from '../card'
 
+// function ratedIdSearch(id, ratedArr) {
+//   const idx = ratedArr.findIndex((el) => el.id === id)
+//   // console.log('idx', idx)
+// }
+
 function CardsField(props) {
   // const cinemaDataArr = [
   //   {
@@ -47,7 +52,8 @@ function CardsField(props) {
   //     userRating: '2',
   //   },
   // ]
-  const randomHash = () => Math.random().toString(36).slice(2)
+  // const randomHash = () => Math.random().toString(36).slice(2)
+
   const { cinemaDataArr } = props
 
   const nothingToShow = cinemaDataArr.length < 1 ? <div>No result</div> : null
@@ -55,7 +61,7 @@ function CardsField(props) {
   return (
     <Flex gap="36px" className="cards-field" wrap>
       {nothingToShow}
-      {cinemaDataArr.map((cinemaData) => {
+      {cinemaDataArr.map((rawCinemaData) => {
         const {
           posterHref,
           movieTitle,
@@ -64,11 +70,12 @@ function CardsField(props) {
           movieDescriptionShort,
           generalRating,
           userRating,
-        } = cinemaData
+          id,
+        } = rawCinemaData
 
         return (
           <Card
-            key={randomHash()}
+            key={id}
             posterHref={posterHref}
             movieTitle={movieTitle}
             releaseDate={releaseDate}
@@ -76,6 +83,7 @@ function CardsField(props) {
             movieDescriptionShort={movieDescriptionShort}
             generalRating={generalRating}
             userRating={userRating}
+            id={id}
           />
         )
       })}
