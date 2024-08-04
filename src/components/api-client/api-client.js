@@ -6,8 +6,6 @@ export default class ApiClient {
       'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4YTYwOTQ4ZmI5NGUwNWU5ZTA3MWYxYjkwMjY5NDUwYiIsIm5iZiI6MTcyMTE5NjczMi4xNzAxOTEsInN1YiI6IjY2OTYzNDdlN2QyODhhMTBjODQ4ZTkzMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.mIt63yKNTjqy6TtCZmyaJfWM-5yX34i2WKqtI9A5yyo'
 
     this.storage = {
-      // authorization:
-      //   'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4YTYwOTQ4ZmI5NGUwNWU5ZTA3MWYxYjkwMjY5NDUwYiIsIm5iZiI6MTcyMTE5NjczMi4xNzAxOTEsInN1YiI6IjY2OTYzNDdlN2QyODhhMTBjODQ4ZTkzMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.mIt63yKNTjqy6TtCZmyaJfWM-5yX34i2WKqtI9A5yyo',
       baseUrl: new URL('https://api.themoviedb.org'),
       optionsGet: {
         method: 'GET',
@@ -36,7 +34,6 @@ export default class ApiClient {
 
     if (idx >= 0) ratedCinemaDataArr[idx] = newCinemaData
     else ratedCinemaDataArr.push(newCinemaData)
-    // console.log('ratedCinemaDataArr', ratedCinemaDataArr)
   }
 
   shortenDescription(desc) {
@@ -71,8 +68,6 @@ export default class ApiClient {
       throw new Error(`Could not fetch ${searchUrl.toString()}, received ${res.status}`)
     }
     const resBody = await res.json()
-
-    console.log('getSearchCinema', resBody)
 
     return {
       totalPages: resBody.total_pages,
@@ -114,16 +109,13 @@ export default class ApiClient {
 
     if (!res.ok) {
       const { ratedCinemaDataArr } = this.storage
-      // throw new Error(`Could not fetch ${searchUrl.toString()}, received ${res.status}`)
-      console.log(`Could not fetch ${searchUrl.toString()}, received ${res.status}`)
-      // console.log('ratedCinemaDataArr', this.storage.ratedCinemaDataArr)
+      // console.log(`Could not fetch ${searchUrl.toString()}, received ${res.status}`)
       return {
         cinemaDataArr: [...ratedCinemaDataArr],
         totalPages: Math.ceil([...ratedCinemaDataArr].length / 20),
       }
     }
     const resBody = await res.json()
-    // console.log(resBody)
 
     return {
       totalPages: resBody.total_pages,

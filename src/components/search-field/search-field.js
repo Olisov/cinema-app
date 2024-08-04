@@ -3,12 +3,6 @@ import { debounce } from 'lodash'
 
 import './search-field.css'
 
-// function onInput(value) {
-//   console.log(value.target.value)
-// }
-
-// const debouncedInput = debounce(onInput, 750)
-
 function SearchField(props) {
   const { searchValueChange, curValue } = props
   const debouncedInput = debounce(searchValueChange, 750)

@@ -7,8 +7,8 @@ import RaringRing from '../rating-ring'
 import './card.css'
 
 function getNameById(id, dict) {
-  const finedName = dict.filter((item) => item.id === id)
-  if (finedName.length > 0) return finedName[0].name
+  const idx = dict.findIndex((el) => el.id === id)
+  if (idx >= 0) return dict[idx].name
   return null
 }
 
@@ -19,7 +19,6 @@ function Card(props) {
   const movieGenresIdsArr = JSON.parse(movieGenresIds)
 
   const randomHash = () => Math.random().toString(36).slice(2)
-  // console.log('Card render')
 
   return (
     <AppConsumer>
@@ -51,9 +50,6 @@ function Card(props) {
                   className="card__user-rating card__desktop"
                   defaultValue={userRating}
                   onChange={(newRate) => {
-                    // updateCinemaDataArr(id, newRate)
-                    console.log(id, newRate)
-                    // apiClientInstance.updateRatedArr(id, newRate)
                     apiClientInstance
                       .setRate(id, newRate, { ...props, userRating: newRate }, guestSessionId)
                       .catch((err) => console.log(`Неуспешный POST запрос, ${err}`))
@@ -61,12 +57,21 @@ function Card(props) {
                   allowHalf
                   count={10}
                 />
-                {/* <div className="card__user-rating">{userRating}</div> */}
               </div>
             </div>
 
             <div className="card__description card__mobile">{movieDescriptionShort} </div>
-            <Rate className="card__user-rating card__mobile" defaultValue={userRating} allowHalf count={10} />
+            <Rate
+              className="card__user-rating card__mobile"
+              defaultValue={userRating}
+              onChange={(newRate) => {
+                apiClientInstance
+                  .setRate(id, newRate, { ...props, userRating: newRate }, guestSessionId)
+                  .catch((err) => console.log(`Неуспешный POST запрос, ${err}`))
+              }}
+              allowHalf
+              count={10}
+            />
           </div>
         )
       }}
