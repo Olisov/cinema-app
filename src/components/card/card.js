@@ -23,7 +23,7 @@ function Card(props) {
 
   return (
     <AppConsumer>
-      {({ genresDict, apiClientInstance, updateCinemaDataArr, guestSessionId }) => {
+      {({ genresDict, apiClientInstance, guestSessionId }) => {
         return (
           <div className="card">
             <div className="card__data-mobile">
@@ -53,7 +53,10 @@ function Card(props) {
                   onChange={(newRate) => {
                     // updateCinemaDataArr(id, newRate)
                     console.log(id, newRate)
-                    apiClientInstance.updateRatedArr(id, newRate)
+                    // apiClientInstance.updateRatedArr(id, newRate)
+                    apiClientInstance
+                      .setRate(id, newRate, { ...props, userRating: newRate }, guestSessionId)
+                      .catch((err) => console.log(`Неуспешный POST запрос, ${err}`))
                   }}
                   allowHalf
                   count={10}

@@ -25,6 +25,7 @@ export default class App extends Component {
       loading: true,
       error: false,
       offline: false,
+      activeTab: 'Search',
       // request: 'return',
       currentPage: 1,
       totalPages: null,
@@ -82,31 +83,51 @@ export default class App extends Component {
     const { request, currentPage } = this.state
     this.getData(request, currentPage)
     this.getGenres()
-    this.guestSessionControl()
+    this.createGuestSession()
+    // this.guestSessionControl()
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { currentPage, request } = this.state
-    if (currentPage !== prevState.currentPage || request !== prevState.request) this.getData(request, currentPage)
+    const { currentPage, request, activeTab, guestSessionId } = this.state
+    if (activeTab !== prevState.activeTab) {
+      if (activeTab === 'Search') this.getData(request, currentPage)
+      else this.getData(null, currentPage, guestSessionId)
+    } else if (currentPage !== prevState.currentPage || request !== prevState.request)
+      this.getData(request, currentPage)
 
-    // console.log('componentDidUpdate')
+    console.log('componentDidUpdate')
   }
 
-  getData(request, page) {
-    this.apiClientInstance
-      .getSearchCinema(request, page)
-      .then((responseBody) => {
-        this.setState({
-          cinemaDataArr: responseBody.cinemaDataArr,
-          totalPages: responseBody.totalPages,
-          loading: false,
+  getData(request, page, guestSessionId) {
+    if (!guestSessionId) {
+      this.apiClientInstance
+        .getSearchCinema(request, page)
+        .then((responseBody) => {
+          this.setState({
+            cinemaDataArr: responseBody.cinemaDataArr,
+            totalPages: responseBody.totalPages,
+            loading: false,
+          })
         })
-      })
-      .catch((errorData) => {
-        if (errorData.message === 'Failed to fetch') this.setState({ offline: true })
-        else this.setState({ error: errorData.toString() })
-        this.setState({ loading: false })
-      })
+        .catch((errorData) => {
+          if (errorData.message === 'Failed to fetch') this.setState({ offline: true })
+          else this.setState({ error: errorData.toString() })
+          this.setState({ loading: false })
+        })
+    } else {
+      this.apiClientInstance
+        .getRatedCinema(guestSessionId, page)
+        .then((responseBody) => {
+          this.setState({
+            cinemaDataArr: responseBody.cinemaDataArr,
+            totalPages: responseBody.totalPages,
+            loading: false,
+          })
+        })
+        .catch((errorData) => {
+          this.setState({ error: errorData.toString(), loading: false })
+        })
+    }
   }
 
   getGenres() {
@@ -126,6 +147,10 @@ export default class App extends Component {
 
   searchValueChange = (newValue) => {
     this.setState({ request: newValue.target.value, loading: true })
+  }
+
+  tabChange = (activeTab) => {
+    this.setState({ activeTab, cinemaDataArr: [], loading: true })
   }
 
   changePage = (newPageNum) => {
@@ -188,22 +213,24 @@ export default class App extends Component {
   //   else this.addRatedCinema(id, newRate)
   // }
 
-  test = () => {
-    this.setState({ loading: true })
-  }
+  // test = () => {
+  //   this.setState({ loading: true })
+  // }
 
   guestSessionControl() {
     // const { guestSessionId, guestSessionExpiresAt } = this.state
     // const guestSessionIsRelevant = new Date(guestSessionExpiresAt) - new Date() > 0
 
-    const guestSessionId = localStorage.getItem('guestSessionId')
-    const guestSessionExpiresAt = localStorage.getItem('guestSessionExpiresAt')
-    const guestSessionIsRelevant = new Date(guestSessionExpiresAt) - new Date() > 0
-    if (!guestSessionId || !guestSessionExpiresAt || !guestSessionIsRelevant) {
-      localStorage.removeItem('guestSessionId')
-      localStorage.removeItem('guestSessionExpiresAt')
-      this.createGuestSession()
-    } else this.setState({ guestSessionId })
+    // const guestSessionId = localStorage.getItem('guestSessionId')
+    // const guestSessionExpiresAt = localStorage.getItem('guestSessionExpiresAt')
+    // const guestSessionIsRelevant = new Date(guestSessionExpiresAt) - new Date() > 0
+    // if (!guestSessionId || !guestSessionExpiresAt || !guestSessionIsRelevant) {
+    //   localStorage.removeItem('guestSessionId')
+    //   localStorage.removeItem('guestSessionExpiresAt')
+    //   this.createGuestSession()
+    // } else this.setState({ guestSessionId })
+
+    this.createGuestSession()
 
     // if (!guestSessionIsRelevant) this.createGuestSession()
   }
@@ -233,6 +260,7 @@ export default class App extends Component {
       <Alert message="Offline. Check you're internet connection or VPN" type="error" showIcon key={this.randomHash()} />
     ) : null
 
+    console.log('cinemaDataArr.length', cinemaDataArr)
     const hasData = !(loading || error || offline)
     const content = hasData ? <CardsField cinemaDataArr={cinemaDataArr} key={this.randomHash()} /> : null
     const pagination =
@@ -264,7 +292,7 @@ export default class App extends Component {
     const tabsContent = [
       {
         label: 'Search',
-        key: this.randomHash(),
+        key: 'Search',
         children: [
           <SearchField key={this.randomHash()} searchValueChange={this.searchValueChange} curValue={request} />,
           spinner,
@@ -276,7 +304,7 @@ export default class App extends Component {
       },
       {
         label: 'Rated',
-        key: this.randomHash(),
+        key: 'Rated',
         children: [spinner, alarmMessage, offlineMessage, content, pagination],
       },
     ]
@@ -299,6 +327,12 @@ export default class App extends Component {
             items={tabsContent}
             onChange={(newTabs) => {
               console.log('tabs', newTabs)
+
+              this.tabChange(newTabs)
+
+              // this.searchValueChange({ target: { value: '' } })
+              // if (newTabs === 'Search') this.getData(request, currentPage)
+              // else if (newTabs === 'Rated') this.getData(null, currentPage, guestSessionId)
               // this.setState({ activeTab: newTabs, loading: true })
 
               // this.test()
@@ -307,7 +341,6 @@ export default class App extends Component {
               //   return { loading: !prevState.loading }
               // })
               // const { request, currentPage } = this.state
-              this.getData(request, currentPage)
             }}
           />
         </div>

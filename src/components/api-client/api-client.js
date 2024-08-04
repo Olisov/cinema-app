@@ -2,6 +2,9 @@ import noPoster from './imgs/poster_not_found.png'
 
 export default class ApiClient {
   constructor() {
+    this.auth =
+      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4YTYwOTQ4ZmI5NGUwNWU5ZTA3MWYxYjkwMjY5NDUwYiIsIm5iZiI6MTcyMTE5NjczMi4xNzAxOTEsInN1YiI6IjY2OTYzNDdlN2QyODhhMTBjODQ4ZTkzMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.mIt63yKNTjqy6TtCZmyaJfWM-5yX34i2WKqtI9A5yyo'
+
     this.storage = {
       // authorization:
       //   'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4YTYwOTQ4ZmI5NGUwNWU5ZTA3MWYxYjkwMjY5NDUwYiIsIm5iZiI6MTcyMTE5NjczMi4xNzAxOTEsInN1YiI6IjY2OTYzNDdlN2QyODhhMTBjODQ4ZTkzMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.mIt63yKNTjqy6TtCZmyaJfWM-5yX34i2WKqtI9A5yyo',
@@ -10,27 +13,31 @@ export default class ApiClient {
         method: 'GET',
         headers: {
           accept: 'application/json',
-          Authorization:
-            'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4YTYwOTQ4ZmI5NGUwNWU5ZTA3MWYxYjkwMjY5NDUwYiIsIm5iZiI6MTcyMTE5NjczMi4xNzAxOTEsInN1YiI6IjY2OTYzNDdlN2QyODhhMTBjODQ4ZTkzMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.mIt63yKNTjqy6TtCZmyaJfWM-5yX34i2WKqtI9A5yyo',
+          Authorization: this.auth,
         },
+      },
+      optionsPost: {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'Content-Type': 'application/json;charset=utf-8',
+          Authorization: this.auth,
+        },
+        body: null,
       },
       ratedCinemaDataArr: [],
       shortDescSize: 200,
     }
   }
 
-  updateRatedArr = (id, newRate) => {
+  updateRatedArr = (id, newCinemaData) => {
     const { ratedCinemaDataArr } = this.storage
     const idx = ratedCinemaDataArr.findIndex((el) => el.id === id)
 
-    if (idx >= 0) ratedCinemaDataArr[idx] = { id, rating: newRate }
-    else ratedCinemaDataArr.push({ id, rating: newRate })
+    if (idx >= 0) ratedCinemaDataArr[idx] = newCinemaData
+    else ratedCinemaDataArr.push(newCinemaData)
     // console.log('ratedCinemaDataArr', ratedCinemaDataArr)
   }
-
-  // savedRate = () => {
-  //   return this.storage.ratedCinemaDataArr
-  // }
 
   shortenDescription(desc) {
     const { shortDescSize } = this.storage
@@ -56,8 +63,6 @@ export default class ApiClient {
       sort_by: 'popularity.desc',
     })
     const searchParams = request ? requestSearchParams : discoverSearchParams
-
-    // console.log(searchUrl)
     searchUrl.search = searchParams
 
     const res = await fetch(searchUrl, optionsGet)
@@ -67,6 +72,8 @@ export default class ApiClient {
     }
     const resBody = await res.json()
 
+    console.log('getSearchCinema', resBody)
+
     return {
       totalPages: resBody.total_pages,
       cinemaDataArr: resBody.results.map((cinemaData) => {
@@ -74,11 +81,10 @@ export default class ApiClient {
         const { ratedCinemaDataArr } = this.storage
         const idx = ratedCinemaDataArr.findIndex((el) => el.id === id)
 
-        const userRating = idx >= 0 ? ratedCinemaDataArr[idx].rating : null
+        const userRating = idx >= 0 ? ratedCinemaDataArr[idx].userRating : null
 
         const { rating = userRating } = cinemaData
 
-        // console.log('cinemaData', cinemaData)
         return {
           posterHref: poster_path ? `https://image.tmdb.org/t/p/w500/${poster_path}` : noPoster,
           movieTitle: title,
@@ -92,6 +98,67 @@ export default class ApiClient {
         }
       }),
     }
+  }
+
+  async getRatedCinema(guestSessionId, page) {
+    const { baseUrl, optionsGet } = this.storage
+    const searchUrl = new URL(`/3/guest_session/${guestSessionId}/rated/movies`, baseUrl)
+    const searchParams = new URLSearchParams({
+      language: 'en-US',
+      page,
+      sort_by: 'created_at.asc',
+    })
+    searchUrl.search = searchParams
+
+    const res = await fetch(searchUrl, optionsGet)
+
+    if (!res.ok) {
+      const { ratedCinemaDataArr } = this.storage
+      // throw new Error(`Could not fetch ${searchUrl.toString()}, received ${res.status}`)
+      console.log(`Could not fetch ${searchUrl.toString()}, received ${res.status}`)
+      // console.log('ratedCinemaDataArr', this.storage.ratedCinemaDataArr)
+      return {
+        cinemaDataArr: [...ratedCinemaDataArr],
+        totalPages: Math.ceil([...ratedCinemaDataArr].length / 20),
+      }
+    }
+    const resBody = await res.json()
+    // console.log(resBody)
+
+    return {
+      totalPages: resBody.total_pages,
+      cinemaDataArr: resBody.results.map((cinemaData) => {
+        const { poster_path, title, release_date, genre_ids, overview, vote_average, id, rating } = cinemaData
+        return {
+          posterHref: poster_path ? `https://image.tmdb.org/t/p/w500/${poster_path}` : noPoster,
+          movieTitle: title,
+          releaseDate: release_date,
+          movieGenresIds: JSON.stringify(genre_ids),
+          movieDescriptionFull: overview,
+          movieDescriptionShort: this.shortenDescription(overview),
+          generalRating: vote_average,
+          userRating: rating,
+          id,
+        }
+      }),
+    }
+  }
+
+  async setRate(id, newRate, newCinemaData, guestSessionId) {
+    const { baseUrl, optionsPost } = this.storage
+    const searchUrl = new URL(`/3/movie/${id}/rating`, baseUrl)
+    const searchParams = new URLSearchParams({ guest_session_id: guestSessionId })
+    optionsPost.body = JSON.stringify({ value: newRate })
+    searchUrl.search = searchParams
+
+    this.updateRatedArr(id, newCinemaData)
+
+    const res = await fetch(searchUrl, optionsPost)
+
+    if (!res.ok) {
+      throw new Error(`Could not fetch ${searchUrl.toString()}, received ${res.status}`)
+    }
+    const resBody = await res.json()
   }
 
   async getGenresDict() {
