@@ -1,4 +1,4 @@
-import noPoster from './imgs/poster_not_found.png'
+import noPoster from '../../assets/poster_not_found.png'
 
 export default class ApiClient {
   constructor() {
@@ -69,6 +69,8 @@ export default class ApiClient {
     }
     const resBody = await res.json()
 
+    console.log(resBody)
+
     return {
       totalPages: resBody.total_pages,
       cinemaDataArr: resBody.results.map((cinemaData) => {
@@ -95,8 +97,8 @@ export default class ApiClient {
     }
   }
 
-  async getRatedCinema(guestSessionId, page) {
-    const { baseUrl, optionsGet } = this.storage
+  async getRatedCinema(guestSessionId, page = 1) {
+    const { baseUrl, optionsGet, ratedCinemaDataArr } = this.storage
     const searchUrl = new URL(`/3/guest_session/${guestSessionId}/rated/movies`, baseUrl)
     const searchParams = new URLSearchParams({
       language: 'en-US',
@@ -108,7 +110,6 @@ export default class ApiClient {
     const res = await fetch(searchUrl, optionsGet)
 
     if (!res.ok) {
-      const { ratedCinemaDataArr } = this.storage
       // console.log(`Could not fetch ${searchUrl.toString()}, received ${res.status}`)
       return {
         cinemaDataArr: [...ratedCinemaDataArr],
@@ -121,7 +122,7 @@ export default class ApiClient {
       totalPages: resBody.total_pages,
       cinemaDataArr: resBody.results.map((cinemaData) => {
         const { poster_path, title, release_date, genre_ids, overview, vote_average, id, rating } = cinemaData
-        return {
+        const receivedCinemaData = {
           posterHref: poster_path ? `https://image.tmdb.org/t/p/w500/${poster_path}` : noPoster,
           movieTitle: title,
           releaseDate: release_date,
@@ -132,6 +133,11 @@ export default class ApiClient {
           userRating: rating,
           id,
         }
+
+        const isBuffered = ratedCinemaDataArr.findIndex((elem) => elem.id === id) >= 0
+        if (!isBuffered) ratedCinemaDataArr.push(receivedCinemaData)
+
+        return receivedCinemaData
       }),
     }
   }

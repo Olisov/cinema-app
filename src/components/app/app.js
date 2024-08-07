@@ -1,4 +1,4 @@
-import { React, Component, PureComponent } from 'react'
+import { React, Component } from 'react'
 import { Spin, Alert, ConfigProvider, Pagination, Tabs } from 'antd'
 
 import ApiClient from '../api-client'
@@ -69,10 +69,12 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    const { request, currentPage } = this.state
+    const { request, currentPage, guestSessionId } = this.state
+
+    this.guestSessionControl()
     this.getGenres()
     this.getData(request, currentPage)
-    this.createGuestSession()
+    // this.createGuestSession()
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -128,6 +130,27 @@ export default class App extends Component {
       })
   }
 
+  guestSessionControl = () => {
+    // console.log('guestSessionControl')
+
+    const guestSessionId = localStorage.getItem('guestSessionId')
+    const guestSessionExpiresAt = localStorage.getItem('guestSessionExpiresAt')
+    const guestSessionIsRelevant = new Date(guestSessionExpiresAt) - new Date() > 0
+
+    console.log('guestSessionId', guestSessionId)
+    if (!guestSessionId || !guestSessionExpiresAt || !guestSessionIsRelevant) {
+      localStorage.removeItem('guestSessionId')
+      localStorage.removeItem('guestSessionExpiresAt')
+      this.createGuestSession()
+    } else this.setState({ guestSessionId })
+    // {
+    //   this.setState({ guestSessionId })
+    //   this.apiClientInstance.getRatedCinema(guestSessionId).catch((errorData) => {
+    //     this.setState({ error: errorData.toString(), loading: false })
+    //   })
+    // }
+  }
+
   randomHash = () => Math.random().toString(36).slice(2)
 
   searchValueChange = (newValue) => {
@@ -146,8 +169,11 @@ export default class App extends Component {
     this.apiClientInstance
       .newGuestSession()
       .then((responseBody) => {
-        const { guest_session_id: guestSessionId } = responseBody
+        // console.log('createGuestSession', responseBody)
+        const { guest_session_id: guestSessionId, expires_at: guestSessionExpiresAt } = responseBody
         this.setState({ guestSessionId })
+        localStorage.setItem('guestSessionId', guestSessionId)
+        localStorage.setItem('guestSessionExpiresAt', guestSessionExpiresAt)
       })
       .catch((errorData) => {
         this.setState({ error: errorData.toString(), loading: false })
@@ -158,7 +184,8 @@ export default class App extends Component {
     const { cinemaDataArr, loading, error, offline, currentPage, totalPages, genresDict, request, guestSessionId } =
       this.state
 
-    const spinner = loading ? <Spin size="large" className="spin--center" key={this.randomHash()} /> : null
+    // const spinner = loading ? <Spin size="large" className="spin--center" key={this.randomHash()} /> : null
+    const spinner = loading ? <Spin size="large" className="spin--center" /> : null
     const alarmMessage =
       error && !offline ? <Alert message={error} type="error" showIcon key={this.randomHash()} /> : null
     const offlineMessage = offline ? (
