@@ -31,6 +31,7 @@ module.exports = {
     'no-unused-vars': ['warn'],
     camelcase: ['warn'],
     'class-methods-use-this': ['warn'],
+    'no-await-in-loop': ['warn'],
     'import/no-unresolved': [2, { caseSensitive: false }],
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     'import/order': [

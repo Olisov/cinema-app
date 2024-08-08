@@ -52,7 +52,9 @@ function Card(props) {
                   onChange={(newRate) => {
                     apiClientInstance
                       .setRate(id, newRate, { ...props, userRating: newRate }, guestSessionId)
-                      .catch((err) => console.log(`Неуспешный POST запрос, ${err}`))
+                      .catch((err) => {
+                        throw new Error(`Неуспешный POST запрос, ${err}`)
+                      })
                   }}
                   allowHalf
                   count={10}
@@ -67,7 +69,9 @@ function Card(props) {
               onChange={(newRate) => {
                 apiClientInstance
                   .setRate(id, newRate, { ...props, userRating: newRate }, guestSessionId)
-                  .catch((err) => console.log(`Неуспешный POST запрос, ${err}`))
+                  .catch((err) => {
+                    throw new Error(`Неуспешный POST запрос, ${err}`)
+                  })
               }}
               allowHalf
               count={10}
