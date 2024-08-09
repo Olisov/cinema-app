@@ -108,7 +108,8 @@ export default class ApiClient {
     const res = await fetch(searchUrl, optionsGet)
 
     if (!res.ok) {
-      throw new Error(`Could not fetch ${searchUrl.toString()}, received ${res.status}`)
+      // throw new Error(`Could not get rated cinema ${searchUrl.toString()}, received ${res.status}`)
+      throw res
     }
     const resBody = await res.json()
 

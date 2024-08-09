@@ -44,8 +44,8 @@ export default class App extends Component {
       this.getData()
   }
 
-  getData() {
-    const { request, currentPage, activeTab, guestSessionId } = this.state
+  getData = () => {
+    const { currentPage, activeTab, guestSessionId } = this.state
 
     if (activeTab === 'Rated') {
       this.apiClientInstance
@@ -58,24 +58,24 @@ export default class App extends Component {
           })
         })
         .catch((errorData) => {
-          this.setState({ error: errorData.toString(), loading: false })
+          if (errorData.status === 404) {
+            this.setState({ cinemaDataArr: [], loading: false })
+          } else {
+            this.setState({ error: `Could not get rated cinema, received ${errorData.status}`, loading: false })
+          }
         })
     } else {
       this.apiClientInstance
         .bufferRatedCinema(guestSessionId)
         .then(() => {
-          this.apiClientInstance.getSearchCinema(request, currentPage).then((responseBody) => {
-            this.setState({
-              cinemaDataArr: responseBody.cinemaDataArr,
-              totalCinemaItem: responseBody.totalCinemaItem,
-              loading: false,
-            })
-          })
+          this.searchRequest()
         })
-        .catch((errorData) => {
-          if (errorData.message === 'Failed to fetch') this.setState({ offline: true })
-          else this.setState({ error: errorData.toString() })
-          this.setState({ loading: false })
+        .catch((err) => {
+          if (err.status === 404) {
+            this.searchRequest()
+          } else {
+            this.setState({ error: `Could not get rated cinema, received ${err.status}`, loading: false })
+          }
         })
     }
   }
@@ -89,6 +89,24 @@ export default class App extends Component {
       })
       .catch((errorData) => {
         this.setState({ error: errorData.toString(), loading: false })
+      })
+  }
+
+  searchRequest = () => {
+    const { request, currentPage } = this.state
+    this.apiClientInstance
+      .getSearchCinema(request, currentPage)
+      .then((responseBody) => {
+        this.setState({
+          cinemaDataArr: responseBody.cinemaDataArr,
+          totalCinemaItem: responseBody.totalCinemaItem,
+          loading: false,
+        })
+      })
+      .catch((errorData) => {
+        if (errorData.message === 'Failed to fetch') this.setState({ offline: true })
+        else this.setState({ error: errorData.toString() })
+        this.setState({ loading: false })
       })
   }
 
