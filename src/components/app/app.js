@@ -122,8 +122,6 @@ export default class App extends Component {
     } else this.setState({ guestSessionId })
   }
 
-  randomHash = () => Math.random().toString(36).slice(2)
-
   searchValueChange = (newValue) => {
     this.setState({ request: newValue.target.value, loading: true })
   }
@@ -163,41 +161,17 @@ export default class App extends Component {
       guestSessionId,
     } = this.state
 
-    const spinner = loading ? <Spin size="large" className="spin--center" key={this.randomHash()} /> : null
-
-    /* 
-    spinner, alarmMessage and etc. without key throw the error in console^
-
     const spinner = loading ? <Spin size="large" className="spin--center" /> : null
-    console.js:288 Warning: Each child in a list should have a unique "key" prop.
-
-    Check the render method of `TabPane`. It was passed a child from App. See https://reactjs.org/link/warning-keys for more information.
-        at Spin (http://localhost:3000/static/js/bundle.js:19953:18)
-        at http://localhost:3000/static/js/bundle.js:60453:25
-        at DomWrapper (http://localhost:3000/static/js/bundle.js:52841:90)
-        at http://localhost:3000/static/js/bundle.js:52543:32
-        at div
-        at div
-        at TabPanelList (http://localhost:3000/static/js/bundle.js:60511:18)
-        at div
-        at http://localhost:3000/static/js/bundle.js:60616:18
-        at Tabs (http://localhost:3000/static/js/bundle.js:21672:7)
-        at div
-        at App (http://localhost:3000/main.b93fc9760cd5b6789783.hot-update.js:41:5)
-    */
-
-    const alarmMessage =
-      error && !offline ? <Alert message={error} type="error" showIcon key={this.randomHash()} /> : null
+    const alarmMessage = error && !offline ? <Alert message={error} type="error" showIcon /> : null
     const offlineMessage = offline ? (
-      <Alert message="Offline. Check you're internet connection or VPN" type="error" showIcon key={this.randomHash()} />
+      <Alert message="Offline. Check you're internet connection or VPN" type="error" showIcon />
     ) : null
 
     const hasData = !(loading || error || offline)
-    const content = hasData ? <CardsField cinemaDataArr={cinemaDataArr} key={this.randomHash()} /> : null
+    const content = hasData ? <CardsField cinemaDataArr={cinemaDataArr} /> : null
     const pagination =
       hasData && cinemaDataArr.length >= 1 ? (
         <ConfigProvider
-          key={this.randomHash()}
           theme={{
             components: {
               Pagination: {
@@ -219,23 +193,29 @@ export default class App extends Component {
         </ConfigProvider>
       ) : null
 
+    const searchPage = (
+      <>
+        <SearchField searchValueChange={this.searchValueChange} curValue={request} />
+        {spinner} {alarmMessage} {offlineMessage} {content} {pagination}
+      </>
+    )
+
+    const ratedPage = (
+      <>
+        {spinner} {alarmMessage} {offlineMessage} {content} {pagination}
+      </>
+    )
+
     const tabsContent = [
       {
         label: 'Search',
         key: 'Search',
-        children: [
-          <SearchField key={this.randomHash()} searchValueChange={this.searchValueChange} curValue={request} />,
-          spinner,
-          alarmMessage,
-          offlineMessage,
-          content,
-          pagination,
-        ],
+        children: searchPage,
       },
       {
         label: 'Rated',
         key: 'Rated',
-        children: [spinner, alarmMessage, offlineMessage, content, pagination],
+        children: ratedPage,
       },
     ]
 
